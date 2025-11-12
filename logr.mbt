@@ -86,7 +86,7 @@ pub struct FuncrSink {
 }
 
 ///|
-impl Eq for FuncrSink with op_equal(self, other) {
+impl Eq for FuncrSink with equal(self, other) {
   self.prefix == other.prefix &&
   self.values == other.values &&
   self.enabled_level == other.enabled_level &&
@@ -115,19 +115,12 @@ impl Show for LogSink with output(self, logger) {
 }
 
 ///|
-impl Show for FuncrSink with output(self, logger) {
-  logger.write_string("FuncrSink{prefix=")
-  logger.write_string(self.prefix)
-  logger.write_string(", level=")
-  logger.write_string(self.enabled_level.to_string())
-  logger.write_string("}")
-}
 
 ///| LogSink methods
 
 ///|
 /// Initialize the LogSink with runtime info
-pub fn LogSink::init(self : LogSink, info : RuntimeInfo) -> Unit {
+pub fn LogSink::init(self : LogSink, _info : RuntimeInfo) -> Unit {
   match self {
     Discard => ()
     Funcr(_) => () // FuncrSink doesn't need special initialization
