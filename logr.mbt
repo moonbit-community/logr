@@ -13,13 +13,19 @@
 /// Value represents any value that can be logged
 pub enum Value {
   VString(String)
-  VInt(Int)
+  VInt(Int32)
   VBool(Bool)
   VDouble(Double)
   VArray(Array[Value])
   VMap(Map[String, Value])
   VNone
-} derive(Eq, Show)
+} derive(Eq, Debug)
+
+///|
+// Keep the quoted and escaped representation used by existing log output.
+pub impl Show for Value with fn output(self, logger) {
+  logger.write_object(@debug.Repr(self))
+}
 
 ///|
 /// Convert common types to Value
@@ -28,7 +34,7 @@ pub fn Value::from_string(s : String) -> Value {
 }
 
 ///|
-pub fn Value::from_int(i : Int) -> Value {
+pub fn Value::from_int(i : Int32) -> Value {
   VInt(i)
 }
 
@@ -48,7 +54,7 @@ pub fn Value::from_double(d : Double) -> Value {
 /// RuntimeInfo holds information that the logr library knows
 pub struct RuntimeInfo {
   /// CallDepth is the number of call frames the logr library adds
-  call_depth : Int
+  call_depth : Int32
 } derive(Eq, Show, Default)
 
 ///|
@@ -61,7 +67,7 @@ pub enum MessageClass {
 } derive(Eq, Show)
 
 ///|
-impl Default for MessageClass with default() {
+impl Default for MessageClass with fn default() {
   None
 }
 
@@ -81,12 +87,12 @@ pub enum LogSink {
 pub struct FuncrSink {
   prefix : String
   values : Array[Value]
-  enabled_level : Int
+  enabled_level : Int32
   options : FuncrOptions
 }
 
 ///|
-impl Eq for FuncrSink with op_equal(self, other) {
+impl Eq for FuncrSink with fn equal(self, other) {
   self.prefix == other.prefix &&
   self.values == other.values &&
   self.enabled_level == other.enabled_level &&
@@ -99,11 +105,11 @@ pub struct FuncrOptions {
   log_caller : MessageClass
   log_timestamp : Bool
   timestamp_format : String
-  verbosity : Int
+  verbosity : Int32
 } derive(Eq, Show, Default)
 
 ///|
-impl Show for LogSink with output(self, logger) {
+impl Show for LogSink with fn output(self, logger) {
   match self {
     Discard => logger.write_string("DiscardSink")
     Funcr(sink) => {
@@ -115,7 +121,7 @@ impl Show for LogSink with output(self, logger) {
 }
 
 ///|
-impl Show for FuncrSink with output(self, logger) {
+impl Show for FuncrSink with fn output(self, logger) {
   logger.write_string("FuncrSink{prefix=")
   logger.write_string(self.prefix)
   logger.write_string(", level=")
@@ -136,7 +142,7 @@ pub fn LogSink::init(self : LogSink, info : RuntimeInfo) -> Unit {
 
 ///|
 /// Check if this LogSink is enabled at the specified V-level
-pub fn LogSink::enabled(self : LogSink, level : Int) -> Bool {
+pub fn LogSink::enabled(self : LogSink, level : Int32) -> Bool {
   match self {
     Discard => false
     Funcr(sink) => level <= sink.options.verbosity
@@ -147,7 +153,7 @@ pub fn LogSink::enabled(self : LogSink, level : Int) -> Bool {
 /// Log an info message
 pub fn LogSink::info(
   self : LogSink,
-  level : Int,
+  level : Int32,
   msg : String,
   keys_and_values : Array[Value],
 ) -> Unit {
@@ -234,11 +240,11 @@ pub fn LogSink::with_name(self : LogSink, name : String) -> LogSink {
 /// is passed on to a LogSink implementation.
 pub struct Logger {
   sink : LogSink?
-  level : Int
+  level : Int32
 } derive(Eq)
 
 ///|
-impl Show for Logger with output(self, logger) {
+impl Show for Logger with fn output(self, logger) {
   logger.write_string("Logger{level=")
   logger.write_string(self.level.to_string())
   match self.sink {
@@ -258,9 +264,9 @@ impl Show for Logger with output(self, logger) {
 /// implementing LogSink, rather than end users. Passing None will create
 /// a Logger which discards all log lines.
 pub fn new(sink : LogSink?) -> Logger {
-  let logger = Logger::{ sink, level: 0 }
+  let logger = Logger::{ sink, level: 0, }
   match sink {
-    Some(s) => s.init(RuntimeInfo::{ call_depth: 1 })
+    Some(s) => s.init(RuntimeInfo::{ call_depth: 1, })
     None => ()
   }
   logger
@@ -281,7 +287,7 @@ pub fn Logger::get_sink(self : Logger) -> LogSink? {
 ///|
 /// with_sink returns a copy of the logger with the new sink
 pub fn Logger::with_sink(self : Logger, sink : LogSink?) -> Logger {
-  Logger::{ sink, level: self.level }
+  Logger::{ sink, level: self.level, }
 }
 
 ///| Logger methods
@@ -333,11 +339,11 @@ pub fn Logger::error(
 /// v returns a new Logger instance for a specific verbosity level, relative to
 /// this Logger. In other words, V-levels are additive. A higher verbosity
 /// level means a log message is less important. Negative V-levels are treated as 0.
-pub fn Logger::v(self : Logger, level : Int) -> Logger {
+pub fn Logger::v(self : Logger, level : Int32) -> Logger {
   match self.sink {
     Some(_) => {
       let adjusted_level = if level < 0 { 0 } else { level }
-      Logger::{ sink: self.sink, level: self.level + adjusted_level }
+      Logger::{ sink: self.sink, level: self.level + adjusted_level, }
     }
     None => self
   }
@@ -345,7 +351,7 @@ pub fn Logger::v(self : Logger, level : Int) -> Logger {
 
 ///|
 /// get_v returns the verbosity level of the logger
-pub fn Logger::get_v(self : Logger) -> Int {
+pub fn Logger::get_v(self : Logger) -> Int32 {
   self.level
 }
 
@@ -357,7 +363,7 @@ pub fn Logger::with_values(
 ) -> Logger {
   match self.sink {
     Some(s) =>
-      Logger::{ sink: Some(s.with_values(keys_and_values)), level: self.level }
+      Logger::{ sink: Some(s.with_values(keys_and_values)), level: self.level, }
     None => self
   }
 }
@@ -368,7 +374,7 @@ pub fn Logger::with_values(
 /// suffixes to the Logger's name.
 pub fn Logger::with_name(self : Logger, name : String) -> Logger {
   match self.sink {
-    Some(s) => Logger::{ sink: Some(s.with_name(name)), level: self.level }
+    Some(s) => Logger::{ sink: Some(s.with_name(name)), level: self.level, }
     None => self
   }
 }
@@ -413,7 +419,7 @@ pub fn default_funcr_options() -> FuncrOptions {
 /// Format an info message for funcr
 fn format_info_message(
   sink : FuncrSink,
-  level : Int,
+  level : Int32,
   msg : String,
   keys_and_values : Array[Value],
 ) -> String {
@@ -543,7 +549,7 @@ pub fn kvs(pairs : Array[(String, Value)]) -> Array[Value] {
 /// instead of the original value.
 pub trait Marshaler {
   /// marshal_log can be used to ensure structs are logged appropriately
-  marshal_log(Self) -> Value
+  fn marshal_log(Self) -> Value
 }
 
 ///| Global constants for convenience
@@ -573,13 +579,13 @@ pub struct Context {
 ///|
 /// Create a new empty context
 pub fn new_context() -> Context {
-  Context::{ values: Map::new(), logger: None }
+  Context::{ values: Map::new(), logger: None, }
 }
 
 ///|
 /// Create a context with a logger
 pub fn new_context_with_logger(logger : Logger) -> Context {
-  Context::{ values: Map::new(), logger: Some(logger) }
+  Context::{ values: Map::new(), logger: Some(logger), }
 }
 
 ///|
@@ -594,7 +600,7 @@ pub fn Context::with_value(
     new_values[k] = v
   }
   new_values[key] = value
-  Context::{ values: new_values, logger: self.logger }
+  Context::{ values: new_values, logger: self.logger, }
 }
 
 ///|
@@ -606,7 +612,7 @@ pub fn Context::get_value(self : Context, key : String) -> Value? {
 ///|
 /// Set a logger in the context
 pub fn Context::with_logger(self : Context, logger : Logger) -> Context {
-  Context::{ values: self.values, logger: Some(logger) }
+  Context::{ values: self.values, logger: Some(logger), }
 }
 
 ///|
@@ -675,7 +681,7 @@ pub fn Context::error(
 pub fn Context::with_logger_name(self : Context, name : String) -> Context {
   match self.logger {
     Some(logger) =>
-      Context::{ values: self.values, logger: Some(logger.with_name(name)) }
+      Context::{ values: self.values, logger: Some(logger.with_name(name)), }
     None => self
   }
 }
@@ -698,10 +704,10 @@ pub fn Context::with_logger_values(
 
 ///|
 /// Create a child context with a specific verbosity level
-pub fn Context::with_logger_v(self : Context, level : Int) -> Context {
+pub fn Context::with_logger_v(self : Context, level : Int32) -> Context {
   match self.logger {
     Some(logger) =>
-      Context::{ values: self.values, logger: Some(logger.v(level)) }
+      Context::{ values: self.values, logger: Some(logger.v(level)), }
     None => self
   }
 }
@@ -710,7 +716,7 @@ pub fn Context::with_logger_v(self : Context, level : Int) -> Context {
 
 ///|
 /// Create a new RuntimeInfo
-pub fn make_runtime_info(call_depth : Int) -> RuntimeInfo {
+pub fn make_runtime_info(call_depth : Int32) -> RuntimeInfo {
   RuntimeInfo::{ call_depth, }
 }
 
@@ -720,9 +726,9 @@ pub fn make_funcr_options(
   log_caller : MessageClass,
   log_timestamp : Bool,
   timestamp_format : String,
-  verbosity : Int,
+  verbosity : Int32,
 ) -> FuncrOptions {
-  FuncrOptions::{ log_caller, log_timestamp, timestamp_format, verbosity }
+  FuncrOptions::{ log_caller, log_timestamp, timestamp_format, verbosity, }
 }
 
 ///|
@@ -730,16 +736,16 @@ pub fn make_funcr_options(
 pub fn make_funcr_sink(
   prefix : String,
   values : Array[Value],
-  enabled_level : Int,
+  enabled_level : Int32,
   options : FuncrOptions,
 ) -> FuncrSink {
-  FuncrSink::{ prefix, values, enabled_level, options }
+  FuncrSink::{ prefix, values, enabled_level, options, }
 }
 
 ///|
 /// Create a new Context
 pub fn make_context(values : Map[String, Value], logger : Logger?) -> Context {
-  Context::{ values, logger }
+  Context::{ values, logger, }
 }
 
 ///|
