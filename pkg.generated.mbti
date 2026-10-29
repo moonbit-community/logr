@@ -1,50 +1,51 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "username/logr_moonbit"
 
-import(
-  "moonbitlang/core/builtin"
-)
+import {
+  "moonbitlang/core/builtin",
+  "moonbitlang/core/debug",
+}
 
 // Values
-fn default_funcr_options() -> FuncrOptions
+pub fn default_funcr_options() -> FuncrOptions
 
-fn discard() -> Logger
+pub fn discard() -> Logger
 
-fn format_kv_pairs(Array[Value]) -> String
+pub fn format_kv_pairs(Array[Value]) -> String
 
-fn kv(String, Value) -> Array[Value]
+pub fn kv(String, Value) -> Array[Value]
 
-fn kvs(Array[(String, Value)]) -> Array[Value]
+pub fn kvs(Array[(String, Value)]) -> Array[Value]
 
-fn make_context(Map[String, Value], Logger?) -> Context
+pub fn make_context(Map[String, Value], Logger?) -> Context
 
-fn make_discard_sink() -> LogSink
+pub fn make_discard_sink() -> LogSink
 
-fn make_funcr_options(MessageClass, Bool, String, Int) -> FuncrOptions
+pub fn make_funcr_options(MessageClass, Bool, String, Int32) -> FuncrOptions
 
-fn make_funcr_sink(String, Array[Value], Int, FuncrOptions) -> FuncrSink
+pub fn make_funcr_sink(String, Array[Value], Int32, FuncrOptions) -> FuncrSink
 
-fn make_funcr_sink_logsink(FuncrSink) -> LogSink
+pub fn make_funcr_sink_logsink(FuncrSink) -> LogSink
 
-fn make_runtime_info(Int) -> RuntimeInfo
+pub fn make_runtime_info(Int32) -> RuntimeInfo
 
-let message_class_all : MessageClass
+pub let message_class_all : MessageClass
 
-let message_class_error : MessageClass
+pub let message_class_error : MessageClass
 
-let message_class_info : MessageClass
+pub let message_class_info : MessageClass
 
-let message_class_none : MessageClass
+pub let message_class_none : MessageClass
 
-fn new(LogSink?) -> Logger
+pub fn new(LogSink?) -> Logger
 
-fn new_context() -> Context
+pub fn new_context() -> Context
 
-fn new_context_with_logger(Logger) -> Context
+pub fn new_context_with_logger(Logger) -> Context
 
-fn new_funcr(FuncrOptions) -> Logger
+pub fn new_funcr(FuncrOptions) -> Logger
 
-fn sanitize_kv(Array[Value]) -> Array[Value]
+pub fn sanitize_kv(Array[Value]) -> Array[Value]
 
 // Errors
 
@@ -52,102 +53,114 @@ fn sanitize_kv(Array[Value]) -> Array[Value]
 pub struct Context {
   values : Map[String, Value]
   logger : Logger?
-}
-fn Context::enrich_logger(Self, Logger) -> Logger
-fn Context::error(Self, String?, String, Array[Value]) -> Unit
-fn Context::get_logger(Self) -> Logger?
-fn Context::get_value(Self, String) -> Value?
-fn Context::info(Self, String, Array[Value]) -> Unit
-fn Context::logger_or_discard(Self) -> Logger
-fn Context::with_logger(Self, Logger) -> Self
-fn Context::with_logger_name(Self, String) -> Self
-fn Context::with_logger_v(Self, Int) -> Self
-fn Context::with_logger_values(Self, Array[Value]) -> Self
-fn Context::with_value(Self, String, Value) -> Self
-impl Eq for Context
-impl Show for Context
+} derive(Eq, Show)
+pub fn Context::enrich_logger(Self, Logger) -> Logger
+pub fn Context::equal(Self, Self) -> Bool
+pub fn Context::error(Self, String?, String, Array[Value]) -> Unit
+pub fn Context::get_logger(Self) -> Logger?
+pub fn Context::get_value(Self, String) -> Value?
+pub fn Context::info(Self, String, Array[Value]) -> Unit
+pub fn Context::logger_or_discard(Self) -> Logger
+pub fn Context::not_equal(Self, Self) -> Bool
+pub fn Context::output(Self, &@builtin.Logger) -> Unit
+pub fn Context::to_string(Self) -> String
+pub fn Context::with_logger(Self, Logger) -> Self
+pub fn Context::with_logger_name(Self, String) -> Self
+pub fn Context::with_logger_v(Self, Int32) -> Self
+pub fn Context::with_logger_values(Self, Array[Value]) -> Self
+pub fn Context::with_value(Self, String, Value) -> Self
 
 pub struct FuncrOptions {
   log_caller : MessageClass
   log_timestamp : Bool
   timestamp_format : String
-  verbosity : Int
-}
-impl Default for FuncrOptions
-impl Eq for FuncrOptions
-impl Show for FuncrOptions
+  verbosity : Int32
+} derive(Default, Eq, Show)
+pub fn FuncrOptions::default() -> Self
+pub fn FuncrOptions::equal(Self, Self) -> Bool
+pub fn FuncrOptions::not_equal(Self, Self) -> Bool
+pub fn FuncrOptions::output(Self, &@builtin.Logger) -> Unit
+pub fn FuncrOptions::to_string(Self) -> String
 
 pub struct FuncrSink {
   prefix : String
   values : Array[Value]
-  enabled_level : Int
+  enabled_level : Int32
   options : FuncrOptions
 }
 
 pub enum LogSink {
   Discard
   Funcr(FuncrSink)
-}
-fn LogSink::enabled(Self, Int) -> Bool
-fn LogSink::error(Self, String?, String, Array[Value]) -> Unit
-fn LogSink::info(Self, Int, String, Array[Value]) -> Unit
-fn LogSink::init(Self, RuntimeInfo) -> Unit
-fn LogSink::with_name(Self, String) -> Self
-fn LogSink::with_values(Self, Array[Value]) -> Self
-impl Eq for LogSink
+} derive(Eq)
+pub fn LogSink::enabled(Self, Int32) -> Bool
+pub fn LogSink::equal(Self, Self) -> Bool
+pub fn LogSink::error(Self, String?, String, Array[Value]) -> Unit
+pub fn LogSink::info(Self, Int32, String, Array[Value]) -> Unit
+pub fn LogSink::init(Self, RuntimeInfo) -> Unit
+pub fn LogSink::not_equal(Self, Self) -> Bool
+pub fn LogSink::with_name(Self, String) -> Self
+pub fn LogSink::with_values(Self, Array[Value]) -> Self
 
 pub struct Logger {
   sink : LogSink?
-  level : Int
-}
-fn Logger::enabled(Self) -> Bool
-fn Logger::error(Self, String?, String, Array[Value]) -> Unit
-fn Logger::get_sink(Self) -> LogSink?
-fn Logger::get_v(Self) -> Int
-fn Logger::info(Self, String, Array[Value]) -> Unit
-fn Logger::is_zero(Self) -> Bool
-fn Logger::v(Self, Int) -> Self
-fn Logger::with_name(Self, String) -> Self
-fn Logger::with_sink(Self, LogSink?) -> Self
-fn Logger::with_values(Self, Array[Value]) -> Self
-impl Eq for Logger
+  level : Int32
+} derive(Eq)
+pub fn Logger::enabled(Self) -> Bool
+pub fn Logger::equal(Self, Self) -> Bool
+pub fn Logger::error(Self, String?, String, Array[Value]) -> Unit
+pub fn Logger::get_sink(Self) -> LogSink?
+pub fn Logger::get_v(Self) -> Int32
+pub fn Logger::info(Self, String, Array[Value]) -> Unit
+pub fn Logger::is_zero(Self) -> Bool
+pub fn Logger::not_equal(Self, Self) -> Bool
+pub fn Logger::v(Self, Int32) -> Self
+pub fn Logger::with_name(Self, String) -> Self
+pub fn Logger::with_sink(Self, LogSink?) -> Self
+pub fn Logger::with_values(Self, Array[Value]) -> Self
 
 pub enum MessageClass {
   None
   All
   Info
   Error
-}
-impl Eq for MessageClass
-impl Show for MessageClass
+} derive(Eq, Show)
+pub fn MessageClass::equal(Self, Self) -> Bool
+pub fn MessageClass::not_equal(Self, Self) -> Bool
+pub fn MessageClass::output(Self, &@builtin.Logger) -> Unit
+pub fn MessageClass::to_string(Self) -> String
 
 pub struct RuntimeInfo {
-  call_depth : Int
-}
-impl Default for RuntimeInfo
-impl Eq for RuntimeInfo
-impl Show for RuntimeInfo
+  call_depth : Int32
+} derive(Default, Eq, Show)
+pub fn RuntimeInfo::default() -> Self
+pub fn RuntimeInfo::equal(Self, Self) -> Bool
+pub fn RuntimeInfo::not_equal(Self, Self) -> Bool
+pub fn RuntimeInfo::output(Self, &@builtin.Logger) -> Unit
+pub fn RuntimeInfo::to_string(Self) -> String
 
 pub enum Value {
   VString(String)
-  VInt(Int)
+  VInt(Int32)
   VBool(Bool)
   VDouble(Double)
   VArray(Array[Value])
   VMap(Map[String, Value])
   VNone
-}
-fn Value::from_bool(Bool) -> Self
-fn Value::from_double(Double) -> Self
-fn Value::from_int(Int) -> Self
-fn Value::from_string(String) -> Self
-impl Eq for Value
-impl Show for Value
+} derive(Eq, @debug.Debug)
+pub fn Value::equal(Self, Self) -> Bool
+pub fn Value::from_bool(Bool) -> Self
+pub fn Value::from_double(Double) -> Self
+pub fn Value::from_int(Int32) -> Self
+pub fn Value::from_string(String) -> Self
+pub fn Value::not_equal(Self, Self) -> Bool
+pub fn Value::output(Self, &@builtin.Logger) -> Unit
+pub fn Value::to_string(Self) -> String
+pub impl Show for Value
 
 // Type aliases
 
 // Traits
 pub trait Marshaler {
-  marshal_log(Self) -> Value
+  fn marshal_log(Self) -> Value
 }
-
