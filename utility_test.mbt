@@ -5,9 +5,9 @@ test "kv function" {
     "username",
     @logr_moonbit.Value::from_string("alice"),
   )
-  inspect(result.length(), content="2")
-  inspect(result[0], content="VString(\"username\")")
-  inspect(result[1], content="VString(\"alice\")")
+  debug_inspect(result.length(), content="2")
+  debug_inspect(result[0], content="VString(\"username\")")
+  debug_inspect(result[1], content="VString(\"alice\")")
 }
 
 ///|
@@ -28,17 +28,17 @@ test "kv function with different value types" {
     "score",
     @logr_moonbit.Value::from_double(95.5),
   )
-  inspect(string_kv, content="[VString(\"name\"), VString(\"bob\")]")
-  inspect(int_kv, content="[VString(\"age\"), VInt(25)]")
-  inspect(bool_kv, content="[VString(\"active\"), VBool(true)]")
-  inspect(double_kv, content="[VString(\"score\"), VDouble(95.5)]")
+  debug_inspect(string_kv, content="[VString(\"name\"), VString(\"bob\")]")
+  debug_inspect(int_kv, content="[VString(\"age\"), VInt(25)]")
+  debug_inspect(bool_kv, content="[VString(\"active\"), VBool(true)]")
+  debug_inspect(double_kv, content="[VString(\"score\"), VDouble(95.5)]")
 }
 
 ///|
 test "kvs function empty array" {
   let result : Array[@logr_moonbit.Value] = @logr_moonbit.kvs([])
-  inspect(result.length(), content="0")
-  inspect(result, content="[]")
+  debug_inspect(result.length(), content="0")
+  debug_inspect(result, content="[]")
 }
 
 ///|
@@ -46,9 +46,9 @@ test "kvs function single pair" {
   let result : Array[@logr_moonbit.Value] = @logr_moonbit.kvs([
     ("key", @logr_moonbit.Value::from_string("value")),
   ])
-  inspect(result.length(), content="2")
-  inspect(result[0], content="VString(\"key\")")
-  inspect(result[1], content="VString(\"value\")")
+  debug_inspect(result.length(), content="2")
+  debug_inspect(result[0], content="VString(\"key\")")
+  debug_inspect(result[1], content="VString(\"value\")")
 }
 
 ///|
@@ -58,13 +58,13 @@ test "kvs function multiple pairs" {
     ("age", @logr_moonbit.Value::from_int(30)),
     ("verified", @logr_moonbit.Value::from_bool(false)),
   ])
-  inspect(result.length(), content="6")
-  inspect(result[0], content="VString(\"name\")")
-  inspect(result[1], content="VString(\"charlie\")")
-  inspect(result[2], content="VString(\"age\")")
-  inspect(result[3], content="VInt(30)")
-  inspect(result[4], content="VString(\"verified\")")
-  inspect(result[5], content="VBool(false)")
+  debug_inspect(result.length(), content="6")
+  debug_inspect(result[0], content="VString(\"name\")")
+  debug_inspect(result[1], content="VString(\"charlie\")")
+  debug_inspect(result[2], content="VString(\"age\")")
+  debug_inspect(result[3], content="VInt(30)")
+  debug_inspect(result[4], content="VString(\"verified\")")
+  debug_inspect(result[5], content="VBool(false)")
 }
 
 ///|
@@ -76,8 +76,8 @@ test "sanitize_kv even number of elements" {
     @logr_moonbit.Value::from_int(42),
   ]
   let result : Array[@logr_moonbit.Value] = @logr_moonbit.sanitize_kv(input)
-  inspect(result.length(), content="4")
-  inspect(
+  debug_inspect(result.length(), content="4")
+  debug_inspect(
     result,
     content="[VString(\"key1\"), VString(\"value1\"), VString(\"key2\"), VInt(42)]",
   )
@@ -91,17 +91,17 @@ test "sanitize_kv odd number of elements" {
     @logr_moonbit.Value::from_string("key2"),
   ]
   let result : Array[@logr_moonbit.Value] = @logr_moonbit.sanitize_kv(input)
-  inspect(result.length(), content="4")
-  inspect(result[2], content="VString(\"key2\")")
-  inspect(result[3], content="VString(\"<no-value>\")")
+  debug_inspect(result.length(), content="4")
+  debug_inspect(result[2], content="VString(\"key2\")")
+  debug_inspect(result[3], content="VString(\"<no-value>\")")
 }
 
 ///|
 test "sanitize_kv empty array" {
   let input : Array[@logr_moonbit.Value] = []
   let result : Array[@logr_moonbit.Value] = @logr_moonbit.sanitize_kv(input)
-  inspect(result.length(), content="0")
-  inspect(result, content="[]")
+  debug_inspect(result.length(), content="0")
+  debug_inspect(result, content="[]")
 }
 
 ///|
@@ -110,9 +110,9 @@ test "sanitize_kv single element" {
     @logr_moonbit.Value::from_string("lonely-key"),
   ]
   let result : Array[@logr_moonbit.Value] = @logr_moonbit.sanitize_kv(input)
-  inspect(result.length(), content="2")
-  inspect(result[0], content="VString(\"lonely-key\")")
-  inspect(result[1], content="VString(\"<no-value>\")")
+  debug_inspect(result.length(), content="2")
+  debug_inspect(result[0], content="VString(\"lonely-key\")")
+  debug_inspect(result[1], content="VString(\"<no-value>\")")
 }
 
 ///|

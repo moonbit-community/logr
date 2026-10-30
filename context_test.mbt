@@ -6,7 +6,7 @@ test "Context creation with new_context" {
     None => () // Expected
     Some(_) => abort("Expected None")
   }
-  inspect(ctx.get_value("nonexistent"), content="None")
+  debug_inspect(ctx.get_value("nonexistent"), content="None")
 }
 
 ///|
@@ -30,8 +30,11 @@ test "Context::with_value single value" {
     "service",
     @logr_moonbit.Value::from_string("user-api"),
   )
-  inspect(new_ctx.get_value("service"), content="Some(VString(\"user-api\"))")
-  inspect(new_ctx.get_value("missing"), content="None")
+  debug_inspect(
+    new_ctx.get_value("service"),
+    content="Some(VString(\"user-api\"))",
+  )
+  debug_inspect(new_ctx.get_value("missing"), content="None")
 }
 
 ///|
@@ -40,9 +43,9 @@ test "Context::with_value multiple values" {
     .with_value("service", @logr_moonbit.Value::from_string("user-api"))
     .with_value("version", @logr_moonbit.Value::from_string("1.0"))
     .with_value("instance", @logr_moonbit.Value::from_int(42))
-  inspect(ctx.get_value("service"), content="Some(VString(\"user-api\"))")
-  inspect(ctx.get_value("version"), content="Some(VString(\"1.0\"))")
-  inspect(ctx.get_value("instance"), content="Some(VInt(42))")
+  debug_inspect(ctx.get_value("service"), content="Some(VString(\"user-api\"))")
+  debug_inspect(ctx.get_value("version"), content="Some(VString(\"1.0\"))")
+  debug_inspect(ctx.get_value("instance"), content="Some(VInt(42))")
 }
 
 ///|
@@ -50,7 +53,7 @@ test "Context::with_value overwrite" {
   let ctx : @logr_moonbit.Context = @logr_moonbit.new_context()
     .with_value("key", @logr_moonbit.Value::from_string("original"))
     .with_value("key", @logr_moonbit.Value::from_string("updated"))
-  inspect(ctx.get_value("key"), content="Some(VString(\"updated\"))")
+  debug_inspect(ctx.get_value("key"), content="Some(VString(\"updated\"))")
 }
 
 ///|

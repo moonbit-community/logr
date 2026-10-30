@@ -39,3 +39,6 @@ pub extend Value with Eq::{not_equal, equal}
 
 ///|
 pub extend Value with Show::{to_string, output}
+
+///|
+pub extend Value with @debug.Debug::{to_repr}

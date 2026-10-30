@@ -176,24 +176,24 @@ test "context value isolation" {
     .with_value("shared", @logr_moonbit.Value::from_string("child_shared"))
 
   // Test value isolation
-  inspect(
+  debug_inspect(
     parent_ctx.get_value("parent"),
     content="Some(VString(\"parent_value\"))",
   )
-  inspect(parent_ctx.get_value("child"), content="None")
-  inspect(
+  debug_inspect(parent_ctx.get_value("child"), content="None")
+  debug_inspect(
     parent_ctx.get_value("shared"),
     content="Some(VString(\"parent_shared\"))",
   )
-  inspect(
+  debug_inspect(
     child_ctx.get_value("parent"),
     content="Some(VString(\"parent_value\"))",
   )
-  inspect(
+  debug_inspect(
     child_ctx.get_value("child"),
     content="Some(VString(\"child_value\"))",
   )
-  inspect(
+  debug_inspect(
     child_ctx.get_value("shared"),
     content="Some(VString(\"child_shared\"))",
   )
