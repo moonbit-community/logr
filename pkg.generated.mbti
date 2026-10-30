@@ -53,7 +53,7 @@ pub fn sanitize_kv(Array[Value]) -> Array[Value]
 pub struct Context {
   values : Map[String, Value]
   logger : Logger?
-} derive(Eq, Show)
+} derive(Eq)
 pub fn Context::enrich_logger(Self, Logger) -> Logger
 pub fn Context::equal(Self, Self) -> Bool
 pub fn Context::error(Self, String?, String, Array[Value]) -> Unit
@@ -69,18 +69,20 @@ pub fn Context::with_logger_name(Self, String) -> Self
 pub fn Context::with_logger_v(Self, Int32) -> Self
 pub fn Context::with_logger_values(Self, Array[Value]) -> Self
 pub fn Context::with_value(Self, String, Value) -> Self
+pub impl Show for Context
 
 pub struct FuncrOptions {
   log_caller : MessageClass
   log_timestamp : Bool
   timestamp_format : String
   verbosity : Int32
-} derive(Default, Eq, Show)
+} derive(Default, Eq)
 pub fn FuncrOptions::default() -> Self
 pub fn FuncrOptions::equal(Self, Self) -> Bool
 pub fn FuncrOptions::not_equal(Self, Self) -> Bool
 pub fn FuncrOptions::output(Self, &@builtin.Logger) -> Unit
 pub fn FuncrOptions::to_string(Self) -> String
+pub impl Show for FuncrOptions
 
 pub struct FuncrSink {
   prefix : String
@@ -124,20 +126,22 @@ pub enum MessageClass {
   All
   Info
   Error
-} derive(Eq, Show)
+} derive(Eq)
 pub fn MessageClass::equal(Self, Self) -> Bool
 pub fn MessageClass::not_equal(Self, Self) -> Bool
 pub fn MessageClass::output(Self, &@builtin.Logger) -> Unit
 pub fn MessageClass::to_string(Self) -> String
+pub impl Show for MessageClass
 
 pub struct RuntimeInfo {
   call_depth : Int32
-} derive(Default, Eq, Show)
+} derive(Default, Eq)
 pub fn RuntimeInfo::default() -> Self
 pub fn RuntimeInfo::equal(Self, Self) -> Bool
 pub fn RuntimeInfo::not_equal(Self, Self) -> Bool
 pub fn RuntimeInfo::output(Self, &@builtin.Logger) -> Unit
 pub fn RuntimeInfo::to_string(Self) -> String
+pub impl Show for RuntimeInfo
 
 pub enum Value {
   VString(String)
@@ -155,6 +159,7 @@ pub fn Value::from_int(Int32) -> Self
 pub fn Value::from_string(String) -> Self
 pub fn Value::not_equal(Self, Self) -> Bool
 pub fn Value::output(Self, &@builtin.Logger) -> Unit
+pub fn Value::to_repr(Self) -> @debug.Repr
 pub fn Value::to_string(Self) -> String
 pub impl Show for Value
 

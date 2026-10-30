@@ -55,7 +55,7 @@ pub fn Value::from_double(d : Double) -> Value {
 pub struct RuntimeInfo {
   /// CallDepth is the number of call frames the logr library adds
   call_depth : Int32
-} derive(Eq, Show, Default)
+} derive(Eq, Default)
 
 ///|
 /// Message classes for caller logging
@@ -64,7 +64,7 @@ pub enum MessageClass {
   All
   Info
   Error
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 impl Default for MessageClass with fn default() {
@@ -106,7 +106,7 @@ pub struct FuncrOptions {
   log_timestamp : Bool
   timestamp_format : String
   verbosity : Int32
-} derive(Eq, Show, Default)
+} derive(Eq, Default)
 
 ///|
 impl Show for LogSink with fn output(self, logger) {
@@ -120,20 +120,11 @@ impl Show for LogSink with fn output(self, logger) {
   }
 }
 
-///|
-impl Show for FuncrSink with fn output(self, logger) {
-  logger.write_string("FuncrSink{prefix=")
-  logger.write_string(self.prefix)
-  logger.write_string(", level=")
-  logger.write_string(self.enabled_level.to_string())
-  logger.write_string("}")
-}
-
 ///| LogSink methods
 
 ///|
 /// Initialize the LogSink with runtime info
-pub fn LogSink::init(self : LogSink, info : RuntimeInfo) -> Unit {
+pub fn LogSink::init(self : LogSink, _info : RuntimeInfo) -> Unit {
   match self {
     Discard => ()
     Funcr(_) => () // FuncrSink doesn't need special initialization
@@ -250,7 +241,7 @@ impl Show for Logger with fn output(self, logger) {
   match self.sink {
     Some(sink) => {
       logger.write_string(", sink=")
-      sink.output(logger)
+      Show::output(sink, logger)
     }
     None => logger.write_string(", sink=None")
   }
@@ -574,18 +565,18 @@ pub let message_class_error : MessageClass = MessageClass::Error
 pub struct Context {
   values : Map[String, Value]
   logger : Logger?
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 /// Create a new empty context
 pub fn new_context() -> Context {
-  Context::{ values: Map::new(), logger: None, }
+  Context::{ values: Map([]), logger: None, }
 }
 
 ///|
 /// Create a context with a logger
 pub fn new_context_with_logger(logger : Logger) -> Context {
-  Context::{ values: Map::new(), logger: Some(logger), }
+  Context::{ values: Map([]), logger: Some(logger), }
 }
 
 ///|
@@ -595,7 +586,7 @@ pub fn Context::with_value(
   key : String,
   value : Value,
 ) -> Context {
-  let new_values = Map::new()
+  let new_values = Map([])
   for k, v in self.values {
     new_values[k] = v
   }

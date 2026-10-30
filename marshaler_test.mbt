@@ -6,7 +6,7 @@ struct TestUser {
   id : Int32
   name : String
   email : String
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 /// Helper function to format TestUser for logging (instead of Marshaler trait)
@@ -61,7 +61,7 @@ struct TestProduct {
   product_id : String
   price : Double
   in_stock : Bool
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 fn TestProduct::to_log_value(self : TestProduct) -> @logr_moonbit.Value {
@@ -137,11 +137,16 @@ test "Custom formatting with context logging" {
 /// Test the actual Marshaler trait by implementing it for a simple type
 struct SimpleItem {
   id : Int32
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 test "SimpleItem basic functionality" {
   let item : SimpleItem = SimpleItem::{ id: 42, }
   inspect(item.id, content="42")
-  inspect(item.to_string(), content="{id: 42}")
+  inspect(Show::to_string(item), content="{id: 42}")
+}
+
+///|
+impl Show for SimpleItem with fn output(self, logger) {
+  logger <+ "{id: \{self.id}}"
 }
